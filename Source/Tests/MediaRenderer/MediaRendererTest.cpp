@@ -38,6 +38,8 @@
 #include "PltUPnP.h"
 #include "PltMediaRenderer.h"
 
+typedef int NPT_Result;
+
 #include <stdlib.h>
 
 /*----------------------------------------------------------------------
@@ -81,6 +83,104 @@ ParseCommandLine(char** args)
     }
 }
 
+class myDelegate: public PLT_MediaRendererDelegate
+{
+public:
+	myDelegate(){}
+	~myDelegate(){}
+
+	// ConnectionManager
+    virtual NPT_Result OnGetCurrentConnectionInfo(PLT_ActionReference& action);
+
+    // AVTransport
+    virtual NPT_Result OnNext(PLT_ActionReference& action);
+    virtual NPT_Result OnPause(PLT_ActionReference& action);
+    virtual NPT_Result OnPlay(PLT_ActionReference& action);
+    virtual NPT_Result OnPrevious(PLT_ActionReference& action);
+    virtual NPT_Result OnSeek(PLT_ActionReference& action);
+    virtual NPT_Result OnStop(PLT_ActionReference& action);
+    virtual NPT_Result OnSetAVTransportURI(PLT_ActionReference& action);
+    virtual NPT_Result OnSetPlayMode(PLT_ActionReference& action);
+
+    // RenderingControl
+    virtual NPT_Result OnSetVolume(PLT_ActionReference& action);
+    virtual NPT_Result OnSetVolumeDB(PLT_ActionReference& action);
+    virtual NPT_Result OnGetVolumeDBRange(PLT_ActionReference& action);
+    virtual NPT_Result OnSetMute(PLT_ActionReference& action);
+};
+
+NPT_Result myDelegate::OnGetCurrentConnectionInfo(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+// AVTransport
+NPT_Result myDelegate::OnNext(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnPause(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnPlay(PLT_ActionReference& action)
+{
+	printf("OnPlay() \n");
+	return 0;
+}
+
+NPT_Result myDelegate::OnPrevious(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnSeek(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnStop(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnSetAVTransportURI(PLT_ActionReference& action)
+{
+	NPT_String curURI;
+	action->GetArgumentValue("CurrentURI", curURI);
+	printf("OnSetAVTransportURI: %s\n", curURI.GetChars());
+	return 0;
+}
+
+NPT_Result myDelegate::OnSetPlayMode(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+// RenderingControl
+NPT_Result myDelegate::OnSetVolume(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnSetVolumeDB(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnGetVolumeDBRange(PLT_ActionReference& action)
+{
+	return 0;
+}
+
+NPT_Result myDelegate::OnSetMute(PLT_ActionReference& action)
+	{
+	return 0;
+}
+
+
 /*----------------------------------------------------------------------
 |   main
 +---------------------------------------------------------------------*/
@@ -92,10 +192,13 @@ main(int /* argc */, char** argv)
     /* parse command line */
     ParseCommandLine(argv);
 
-    PLT_DeviceHostReference device(
-        new PLT_MediaRenderer(Options.friendly_name?Options.friendly_name:"Platinum Media Renderer",
+	myDelegate *dele = new myDelegate();
+	PLT_MediaRenderer *render = new PLT_MediaRenderer(Options.friendly_name?Options.friendly_name:"Platinum Media Renderer",
                               false,
-                              "e6572b54-f3c7-2d91-2fb5-b757f2537e21"));
+                              "e6572b54-f3c7-2d91-2fb5-b757f2537e21");
+	render->SetDelegate(dele);
+    PLT_DeviceHostReference device(render);
+
     upnp.AddDevice(device);
     bool added = true;
 

@@ -1,0 +1,38 @@
+1 下载Platinum源码
+git clone git@github.com:plutinosoft/Platinum.git --recursive
+
+2 配置NDK环境
+export ANDROID_NDK_ROOT=/home/weller/software/android-ndk-r11b
+
+3 编译Platinum静态文件
+sudo apt install scons
+scons target=arm-android-linux build_config=Release
+
+问题
+
+sh: 1: arm-linux-androideabi-g++: not found
+解决方法
+
+修改Build/Targets/arm-android-linux/Config.scons的
+PLATFORM_TO_TARGET_MAP = { 
+    'linux-i386' : 'linux-x86_64',
+    'linux2' : 'linux-x86_64',
+    ...
+}
+
+问题
+
+ThirdParty/Neptune/Source/Core/NptUtils.h:46:19: fatal error: stdio.h: No such file or directory
+解决方法
+
+ANDROID_NDK_ROOT的版本问题，尝试android-ndk-r11b可用，最新版的ndk不可用
+
+Source/Platform/Android/module/platinum/jni/Android.mk
+
+Line43
+LOCAL_CFLAGS += -DNPT_CONFIG_ENABLE_LOGGING
+++++ LOCAL_C_INCLUDES += $(PLT_ROOT)/ThirdParty/Neptune/Source/Core
+
+5 生成so位置
+
+Source/Platform/Android/module/platinum/libs/
