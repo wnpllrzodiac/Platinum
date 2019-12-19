@@ -110,8 +110,10 @@ main(int /* argc */, char** argv)
         if (*buf == 's') {
             if (added) {
                 upnp.RemoveDevice(device);
+				printf("device offline\n");
             } else {
                 upnp.AddDevice(device);
+				printf("device online\n");
             }
             added = !added;
         }
