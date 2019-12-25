@@ -38,7 +38,7 @@
 #include "PltUPnP.h"
 #include "PltMediaRenderer.h"
 
-typedef int NPT_Result;
+//typedef int NPT_Result;
 
 #include <stdlib.h>
 
